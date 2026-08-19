@@ -77,7 +77,7 @@ st.markdown(
 
 
 def build_prompt(goal: str, experience: str, days: int, equipment: str, limitations: str) -> str:
-    limitations_text = limitations.strip() or "None reported"
+    limitations_text: str = limitations.strip() or "None reported"
     return f"""You are an expert strength and conditioning coach. Create a safe, practical,
 personalized weekly workout plan from these inputs:
 - Fitness goal: {goal}
@@ -95,12 +95,12 @@ recommend professional medical guidance when a limitation may require it."""
 
 
 def generate_plan(goal: str, experience: str, days: int, equipment: str, limitations: str) -> str:
-    api_key = os.getenv("GROQ_API_KEY")
-    model = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
+    api_key: str | None = os.getenv("GROQ_API_KEY")
+    model: str = os.getenv("GROQ_MODEL", "llama-3.3-70b-versatile")
     if not api_key or api_key == "your_groq_api_key_here":
         raise ValueError("Add your Groq API key to the .env file before generating a plan.")
 
-    client = Groq(api_key=api_key)
+    client: Groq = Groq(api_key=api_key)
     response = client.chat.completions.create(
         model=model,
         messages=[
@@ -129,28 +129,28 @@ form_column, output_column = st.columns([0.9, 1.4], gap="large")
 with form_column:
     st.markdown('<div class="section-label">Your training profile</div>', unsafe_allow_html=True)
     st.markdown('<div class="field-label">Fitness goal</div>', unsafe_allow_html=True)
-    goal = st.selectbox("Fitness goal", ["Build muscle", "Lose fat", "General fitness", "Improve endurance"], label_visibility="collapsed")
+    goal: str = st.selectbox("Fitness goal", ["Build muscle", "Lose fat", "General fitness", "Improve endurance"], label_visibility="collapsed")
     st.markdown('<div class="field-label">Experience level</div>', unsafe_allow_html=True)
-    experience = st.selectbox("Experience level", ["Beginner", "Intermediate", "Advanced"], label_visibility="collapsed")
+    experience: str = st.selectbox("Experience level", ["Beginner", "Intermediate", "Advanced"], label_visibility="collapsed")
     st.markdown('<div class="field-label">Days available per week</div>', unsafe_allow_html=True)
-    days = st.slider("Days available per week", min_value=1, max_value=7, value=3, label_visibility="collapsed")
+    days: int = st.slider("Days available per week", min_value=1, max_value=7, value=3, label_visibility="collapsed")
     st.markdown('<div class="field-label">Equipment access</div>', unsafe_allow_html=True)
-    equipment = st.selectbox("Equipment access", ["No equipment", "Home dumbbells", "Full gym"], label_visibility="collapsed")
+    equipment: str = st.selectbox("Equipment access", ["No equipment", "Home dumbbells", "Full gym"], label_visibility="collapsed")
     st.markdown('<div class="field-label">Injuries or limitations (optional)</div>', unsafe_allow_html=True)
-    limitations = st.text_area(
+    limitations: str = st.text_area(
         "Injuries or limitations (optional)",
         placeholder="e.g. bad knees, no overhead pressing",
         height=100,
         label_visibility="collapsed",
     )
-    generate = st.button("Generate plan  →", use_container_width=True, type="primary")
+    generate: bool = st.button("Generate plan  →", use_container_width=True, type="primary")
     st.markdown('<p class="disclaimer">This is general fitness information, not medical advice. Stop if you feel pain and consult a qualified professional about injuries or health conditions.</p>', unsafe_allow_html=True)
 
 with output_column:
     if generate:
         with st.spinner("Building your plan..."):
             try:
-                plan = generate_plan(goal, experience, days, equipment, limitations)
+                plan: str = generate_plan(goal, experience, days, equipment, limitations)
             except Exception as error:
                 st.error(str(error))
             else:
